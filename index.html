@@ -144,6 +144,26 @@ textarea{resize:vertical;min-height:52px;font-size:11px}
 .mbtn-cancel{background:#fff;color:#5a6a7e;border:1px solid #cfd7e3}
 .loading{display:none;margin-top:14px;font-size:12px;color:#3a9bd5}
 .loading.show{display:block}
+@media print{
+  body{background:#fff!important}
+  .page{padding:0!important;max-width:100%!important;margin:0!important}
+  .agil-header,.agil-footer,.form-body,.action-bar,.modal-bg,
+  .sc,.add-btns,.add-desp-btn,.desp-extra-row,.btn-calc,.btn-pdf,.btn-limpar{display:none!important}
+  .resultado{display:block!important;margin:0!important}
+  #pdf-header,#pdf-footer{display:block!important}
+  #sec-rateio-desp,#sec-resumo{display:none!important}
+  .tax-block{page-break-inside:avoid;break-inside:avoid}
+  .ncm-total-block{page-break-inside:avoid;break-inside:avoid}
+  .trow{page-break-inside:avoid;break-inside:avoid}
+  .tsub{page-break-inside:avoid;break-inside:avoid}
+  .tax-body{page-break-inside:avoid;break-inside:avoid}
+  .rtable{page-break-inside:auto}
+  .rtable tr{page-break-inside:avoid;break-inside:avoid}
+  .grand-total{page-break-inside:avoid;break-inside:avoid}
+  .unit-card{page-break-inside:avoid;break-inside:avoid}
+  .rs{page-break-after:avoid;break-after:avoid}
+  #gt-print-clone,#uc-print-clone,#ob-print-clone{display:block!important}
+}
 </style>
 </head>
 <body>
@@ -779,46 +799,36 @@ function abrirModal(){
 }
 function fecharModal(){document.getElementById('modal').classList.remove('show');}
 
-async function confirmarPDF(){
-  document.getElementById('loading').textContent='Gerando PDF, aguarde...';
-  document.getElementById('loading').classList.add('show');
-  document.getElementById('pdf-header').style.display='block';
-  document.getElementById('pdf-footer').style.display='block';
+function confirmarPDF(){
+  fecharModal();
+  // Preparar: ocultar seções que não vão no PDF, mostrar header/footer de impressão
   document.getElementById('sec-rateio-desp').style.display='none';
   document.getElementById('sec-resumo').style.display='none';
-  // Clonar grand-total, unit-cards e obs para mostrar no PDF fora do sec-resumo
+  document.getElementById('pdf-header').style.display='block';
+  document.getElementById('pdf-footer').style.display='block';
+  // Clonar grand-total, unit-cards e obs-box para aparecerem no PDF
   var pdfArea=document.getElementById('pdf-area');
   var pdfFooterEl=document.getElementById('pdf-footer');
   var gtClone=document.getElementById('grand-total').cloneNode(true);
   var ucClone=document.getElementById('unit-cards-wrap').cloneNode(true);
   var obClone=document.getElementById('obs-box').cloneNode(true);
+  gtClone.id='gt-print-clone';ucClone.id='uc-print-clone';obClone.id='ob-print-clone';
   pdfArea.insertBefore(obClone,pdfFooterEl);
   pdfArea.insertBefore(ucClone,pdfFooterEl);
   pdfArea.insertBefore(gtClone,pdfFooterEl);
-  try{
-    var canvas=await html2canvas(pdfArea,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#ffffff',logging:false});
-    var img=canvas.toDataURL('image/png');
-    var pdf=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-    var pw=pdf.internal.pageSize.getWidth();
-    var ph=pdf.internal.pageSize.getHeight()-10;
-    var ih=(canvas.height/canvas.width)*pw;
-    var yOff=0;
-    while(yOff<ih){
-      if(yOff>0)pdf.addPage();
-      pdf.addImage(img,'PNG',0,-(yOff)+5,pw,ih);
-      yOff+=ph;
-    }
-    var imp=(lastCalc?lastCalc.imp:'').replace(/[^a-zA-Z0-9]/g,'_').substring(0,30)||'Estudo';
-    var dt=new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
-    pdf.save('Estudo_Viabilidade_'+imp+'_'+dt+'.pdf');
-  }catch(e){alert('Erro PDF: '+e.message);}
-  pdfArea.removeChild(gtClone);pdfArea.removeChild(ucClone);pdfArea.removeChild(obClone);
-  document.getElementById('pdf-header').style.display='none';
-  document.getElementById('pdf-footer').style.display='none';
-  document.getElementById('sec-rateio-desp').style.display='';
-  document.getElementById('sec-resumo').style.display='';
-  document.getElementById('loading').classList.remove('show');
-  fecharModal();
+  // Disparar impressão e restaurar depois
+  setTimeout(function(){
+    window.print();
+    setTimeout(function(){
+      pdfArea.removeChild(gtClone);
+      pdfArea.removeChild(ucClone);
+      pdfArea.removeChild(obClone);
+      document.getElementById('pdf-header').style.display='none';
+      document.getElementById('pdf-footer').style.display='none';
+      document.getElementById('sec-rateio-desp').style.display='';
+      document.getElementById('sec-resumo').style.display='';
+    },500);
+  },200);
 }
 
 function confirmarXLSX(){
