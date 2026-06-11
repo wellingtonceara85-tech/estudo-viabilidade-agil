@@ -394,8 +394,12 @@ textarea{resize:vertical;min-height:52px;font-size:11px}
     <div class="rs"><div class="dot"></div><span>1 – Impostos federais e estaduais por item</span></div>
     <div id="imp-wrap"></div>
 
-    <div class="rs"><div class="dot"></div><span>1.1 – Imposto total por NCM</span></div>
-    <div id="ncm-total-wrap"></div>
+
+
+    <div id="sec-ncm-total">
+      <div class="rs"><div class="dot"></div><span>1.1 – Imposto total por NCM</span></div>
+      <div id="ncm-total-wrap"></div>
+    </div>
 
     <div class="rs"><div class="dot"></div><span>2 – Despesas gerais</span></div>
     <div class="desp-title">Despesas gerais</div>
@@ -443,21 +447,19 @@ textarea{resize:vertical;min-height:52px;font-size:11px}
 <script>
 var SISCOMEX = {1:154.23,2:192.79,3:223.64,4:254.49,5:285.34,6:308.48,7:331.62,8:354.76,9:377.9,10:401.04,11:416.46,12:431.88,13:447.3,14:462.72,15:478.14,16:493.56,17:508.98,18:524.4,19:539.82,20:555.24,21:562.95,22:570.66,23:578.37,24:586.08,25:593.79,26:601.5,27:609.21,28:616.92,29:624.63,30:632.34,31:640.05,32:647.76,33:655.47,34:663.18,35:670.89,36:678.6,37:686.31,38:694.02,39:701.73,40:709.44,41:717.15,42:724.86,43:732.57,44:740.28,45:747.99,46:755.7,47:763.41,48:771.12,49:778.83,50:786.54,51:790.4,52:794.26,53:798.12,54:801.98,55:805.84,56:809.7,57:813.56,58:817.42,59:821.28,60:825.14,61:829.0,62:832.86,63:836.72,64:840.58,65:844.44,66:848.3,67:852.16,68:856.02,69:859.88,70:863.74,71:867.6,72:871.46,73:875.32,74:879.18,75:883.04,76:886.9,77:890.76,78:894.62,79:898.48,80:902.34,81:906.2,82:910.06,83:913.92,84:917.78,85:921.64,86:925.5,87:929.36,88:933.22,89:937.08,90:940.94,91:944.8,92:948.66,93:952.52,94:956.38,95:960.24,96:964.1,97:967.96,98:971.82,99:975.68,100:979.54,101:983.4,102:987.26,103:991.12,104:994.98,105:998.84,106:1002.7,107:1006.56,108:1010.42,109:1014.28,110:1018.14,111:1022.0,112:1025.86,113:1029.72,114:1033.58,115:1037.44,116:1041.3,117:1045.16,118:1049.02,119:1052.88,120:1056.74,121:1060.6,122:1064.46,123:1068.32,124:1072.18,125:1076.04,126:1079.9,127:1083.76,128:1087.62,129:1091.48,130:1095.34,131:1099.2,132:1103.06,133:1106.92,134:1110.78,135:1114.64,136:1118.5,137:1122.36,138:1126.22,139:1130.08,140:1133.94,141:1137.8,142:1141.66,143:1145.52,144:1149.38,145:1153.24,146:1157.1,147:1160.96,148:1164.82,149:1168.68,150:1172.54};
 var items=[], iCount=0, extraIds=[], extraCount=0;
-var lastCalc=null; // guarda resultado para XLSX
+var lastCalc=null;
 
 function getSiscomex(n){return SISCOMEX[n]||154.23;}
 function atualizarSiscomex(){
   var n=parseInt(document.getElementById('f_adicoes').value)||1;
   document.getElementById('sis-badge').textContent='R$ '+getSiscomex(n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 }
-
 function fR(v){if(!v&&v!==0)return'R$ -';return'R$ '+parseFloat(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function fU(v){if(!v&&v!==0)return'$ -';return'$ '+parseFloat(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function fp(v){return(parseFloat(v)*100).toFixed(2)+'%';}
 function fPct(v){return parseFloat(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';}
 function gv(id){return parseFloat(document.getElementById(id)&&document.getElementById(id).value)||0;}
 function gs(id){return document.getElementById(id)&&document.getElementById(id).value?document.getElementById(id).value.trim():'';}
-function n(v){return parseFloat(v)||0;}
 
 function addItem(cf){
   iCount++;var id=iCount;items.push(id);cf=cf||{};
@@ -488,16 +490,14 @@ function addItem(cf){
       +'<div><label>Tipo ICMS</label>'
         +'<select id="i_icmstp-'+id+'">'
           +'<option value="normal"'+((!cf.icmstp||cf.icmstp==='normal')?' selected':'')+'">Normal (base cheia)</option>'
-          +'<option value="reducao"'+(cf.icmstp==='reducao'?' selected':'')+'">Redu&#231;&#227;o – Conv. ICMS 52/91</option>'
+          +'<option value="reducao"'+(cf.icmstp==='reducao'?' selected':'')+'">Redu&#231;&#227;o &#8211; Conv. ICMS 52/91</option>'
         +'</select>'
       +'</div>'
       +'<div><label>Quantidade de pe&#231;as</label><input type="number" id="i_qtd-'+id+'" step="1" min="1" placeholder="Ex: 1500" value="'+(cf.qtd||'')+'"></div>'
     +'</div>';
   document.getElementById('items-wrap').appendChild(d);
 }
-
 function remItem(id){items=items.filter(function(x){return x!==id;});var el=document.getElementById('itm-'+id);if(el)el.remove();}
-
 function duplicarItem(id){
   addItem({inv:gs('i_inv-'+id),desc:gs('i_desc-'+id),ncm:gs('i_ncm-'+id),
     fob:gs('i_fob-'+id),ii:gs('i_ii-'+id),ipi:gs('i_ipi-'+id),
@@ -505,7 +505,6 @@ function duplicarItem(id){
     qtd:gs('i_qtd-'+id),
     icmstp:document.getElementById('i_icmstp-'+id)?document.getElementById('i_icmstp-'+id).value:'normal'});
 }
-
 function addExtra(){
   extraCount++;var eid=extraCount;extraIds.push(eid);
   var d=document.createElement('div');d.className='desp-extra-row';d.id='ext-'+eid;
@@ -520,7 +519,6 @@ function calcular(){
   if(!items.length){alert('Adicione pelo menos um item.');return;}
   var cambio=gv('f_cambio'),freteUSD=gv('f_frete');
   if(!cambio||!freteUSD){alert('Preencha taxa cambial e frete total.');return;}
-
   var adicoes=parseInt(document.getElementById('f_adicoes').value)||1;
   var sisTotal=getSiscomex(adicoes);
   var totalFOB_USD=0;
@@ -528,9 +526,8 @@ function calcular(){
   var freteBRL=freteUSD*cambio;
   var qtdTotal=gv('f_qtd')||1;
   var hoje=new Date().toLocaleDateString('pt-BR');
-
-  // AFRMM total: Frete USD * câmbio * 8% + R$20
   var afrmmTotal=freteUSD*cambio*0.08+20;
+  var totalCIF_all=(totalFOB_USD+freteUSD)*cambio;
 
   var itemData=items.map(function(id){
     var fobUSD=gv('i_fob-'+id);
@@ -539,28 +536,17 @@ function calcular(){
     var cifUSD=fobUSD+fpUSD;
     var cifBRL=cifUSD*cambio;
     var fobBRL=fobUSD*cambio;
-    // AFRMM rateado pelo CIF
-    var afrmmItem=totalFOB_USD>0?(cifBRL/((totalFOB_USD+freteUSD)*cambio))*afrmmTotal:afrmmTotal;
-    // Siscomex rateado pelo CIF
-    var totalCIF_all=(totalFOB_USD+freteUSD)*cambio;
+    var afrmmItem=totalCIF_all>0?(cifBRL/totalCIF_all)*afrmmTotal:afrmmTotal;
     var sisItem=totalCIF_all>0?(cifBRL/totalCIF_all)*sisTotal:sisTotal;
-
     var iiA=gv('i_ii-'+id)/100,ipiA=gv('i_ipi-'+id)/100;
     var pisA=gv('i_pis-'+id)/100,cofA=gv('i_cof-'+id)/100;
     var icmsA=gv('i_icms-'+id)/100;
     var icmsTP=document.getElementById('i_icmstp-'+id)?document.getElementById('i_icmstp-'+id).value:'normal';
     var qtdItem=gv('i_qtd-'+id)||0;
-
-    var ii=cifBRL*iiA;
-    var ipi=(cifBRL+ii)*ipiA;
-    var pis=cifBRL*pisA;
-    var cofins=cifBRL*cofA;
+    var ii=cifBRL*iiA,ipi=(cifBRL+ii)*ipiA,pis=cifBRL*pisA,cofins=cifBRL*cofA;
     var icms=0;
-    if(icmsTP==='normal'){
-      icms=((cifBRL+ii+ipi+pis+cofins+afrmmItem+sisItem)/(1-icmsA))*icmsA;
-    }else{
-      icms=((cifBRL+ii+ipi+pis+cofins+afrmmItem+sisItem)/0.944)*icmsA;
-    }
+    if(icmsTP==='normal'){icms=((cifBRL+ii+ipi+pis+cofins+afrmmItem+sisItem)/(1-icmsA))*icmsA;}
+    else{icms=((cifBRL+ii+ipi+pis+cofins+afrmmItem+sisItem)/0.944)*icmsA;}
     var totalImp=ii+ipi+pis+cofins+sisItem+icms+afrmmItem;
     return{id:id,desc:gs('i_desc-'+id)||'—',ncm:gs('i_ncm-'+id)||'—',inv:gs('i_inv-'+id)||'—',
       fobUSD:fobUSD,fpUSD:fpUSD,cifUSD:cifUSD,fobBRL:fobBRL,fpBRL:fpBRL,cifBRL:cifBRL,
@@ -571,7 +557,6 @@ function calcular(){
   var totalFOB_BRL=0,totalCIF_BRL=0,totalImpAll=0;
   itemData.forEach(function(x){totalFOB_BRL+=x.fobBRL;totalCIF_BRL+=x.cifBRL;totalImpAll+=x.totalImp;});
 
-  // DESPESAS
   var d_frete=freteBRL,d_taxas=gv('d_taxas'),d_port=gv('d_port');
   var d_rod=gv('d_rod'),d_hon=gv('d_hon'),d_out=gv('d_out');
   var totalExtras=0,extrasData=[];
@@ -582,10 +567,9 @@ function calcular(){
   });
   var totalDesp=d_frete+d_taxas+d_port+d_rod+d_hon+d_out+totalExtras;
   var grandTotal=totalImpAll+totalDesp;
-  var unitarioGeral=grandTotal/qtdTotal;
+  var unitarioGeral=grandTotal/(qtdTotal||1);
   document.getElementById('d_frete').value=freteBRL.toFixed(2);
 
-  // Lista de despesas para rateio
   var despList=[
     {nom:'Frete Internacional',val:d_frete},
     {nom:'Taxas locais de frete',val:d_taxas},
@@ -596,17 +580,15 @@ function calcular(){
   ];
   extrasData.forEach(function(e){despList.push({nom:e.nom,val:e.val});});
 
-  // ---- RENDER ----
-
   // IDENT
   document.getElementById('res-ident').innerHTML=
-    '<tr><td class="lk">IMPORTADOR:</td><td>'+gs('f_imp')+'</td><td class="sep"></td><td class="key">TAXA C&Acirc;MBIO</td><td class="val">R$ '+cambio.toFixed(4)+'</td></tr>'+
-    '<tr><td class="lk">EXPORTADOR:</td><td>'+gs('f_exp')+'</td><td class="sep"></td><td class="key">QUANTIDADE TOTAL</td><td class="val">'+qtdTotal+'</td></tr>'+
-    '<tr><td class="lk">PRODUTO:</td><td>'+gs('f_prod')+'</td><td class="sep"></td><td class="key">VMLE (R$)</td><td class="val" style="font-weight:700">'+fR(totalFOB_BRL)+'</td></tr>'+
-    '<tr><td class="lk">PORTO ORIGEM:</td><td>'+gs('f_porig')+'</td><td class="sep"></td><td class="key">TOTAL FOB (USD)</td><td class="val">'+fU(totalFOB_USD)+'</td></tr>'+
-    '<tr><td class="lk">PORTO DESTINO:</td><td>'+gs('f_pdest')+'</td><td class="sep"></td><td class="key">FRETE (USD)</td><td class="val">'+fU(freteUSD)+'</td></tr>'+
-    '<tr><td class="lk">INVOICE(S):</td><td>'+gs('f_inv')+'</td><td class="sep"></td><td class="key">VALOR ADUANEIRO (R$)</td><td class="val" style="font-weight:700">'+fR(totalCIF_BRL)+'</td></tr>'+
-    '<tr><td class="lk">SISCOMEX:</td><td>'+adicoes+' adi&#231;&#245;es</td><td class="sep"></td><td class="key">TAXA SISCOMEX (R$)</td><td class="val" style="font-weight:700">'+fR(sisTotal)+'</td></tr>';
+    '<tr><td class="lk">IMPORTADOR:</td><td>'+gs('f_imp')+'</td><td class="sep"></td><td class="key">TAXA C&Acirc;MBIO</td><td class="val">R$ '+cambio.toFixed(4)+'</td></tr>'
+    +'<tr><td class="lk">EXPORTADOR:</td><td>'+gs('f_exp')+'</td><td class="sep"></td><td class="key">QUANTIDADE TOTAL</td><td class="val">'+qtdTotal+'</td></tr>'
+    +'<tr><td class="lk">PRODUTO:</td><td>'+gs('f_prod')+'</td><td class="sep"></td><td class="key">VMLE (R$)</td><td class="val" style="font-weight:700">'+fR(totalFOB_BRL)+'</td></tr>'
+    +'<tr><td class="lk">PORTO ORIGEM:</td><td>'+gs('f_porig')+'</td><td class="sep"></td><td class="key">TOTAL FOB (USD)</td><td class="val">'+fU(totalFOB_USD)+'</td></tr>'
+    +'<tr><td class="lk">PORTO DESTINO:</td><td>'+gs('f_pdest')+'</td><td class="sep"></td><td class="key">FRETE (USD)</td><td class="val">'+fU(freteUSD)+'</td></tr>'
+    +'<tr><td class="lk">INVOICE(S):</td><td>'+gs('f_inv')+'</td><td class="sep"></td><td class="key">VALOR ADUANEIRO (R$)</td><td class="val" style="font-weight:700">'+fR(totalCIF_BRL)+'</td></tr>'
+    +'<tr><td class="lk">SISCOMEX:</td><td>'+adicoes+' adi&#231;&#245;es</td><td class="sep"></td><td class="key">TAXA SISCOMEX (R$)</td><td class="val" style="font-weight:700">'+fR(sisTotal)+'</td></tr>';
 
   // RATEIO
   var rt='<thead><tr>'
@@ -627,7 +609,7 @@ function calcular(){
   // IMPOSTOS POR ITEM
   var impHtml='';
   itemData.forEach(function(x){
-    var icmsLabel='ICMS'+(x.icmsTP==='reducao'?' (Redu&ccedil;&atilde;o – Conv. 52/91)':'');
+    var icmsLabel='ICMS'+(x.icmsTP==='reducao'?' (Redu&ccedil;&atilde;o &#8211; Conv. 52/91)':'');
     impHtml+='<div class="tax-block">'
       +'<div class="tax-title">NCM: '+x.ncm+' &mdash; '+x.desc+' &nbsp;|&nbsp; Valor Aduaneiro: '+fR(x.cifBRL)+'</div>'
       +'<div class="tax-body">'
@@ -636,50 +618,51 @@ function calcular(){
         +'<div class="trow"><span class="lbl">PIS<span class="aliq">'+fp(x.pisA)+'</span></span><span class="val">'+fR(x.pis)+'</span></div>'
         +'<div class="trow"><span class="lbl">COFINS<span class="aliq">'+fp(x.cofA)+'</span></span><span class="val">'+fR(x.cofins)+'</span></div>'
         +'<div class="trow"><span class="lbl">Taxa Siscomex (rateado pelo CIF)<span class="aliq">proporcional</span></span><span class="val">'+fR(x.sisItem)+'</span></div>'
-        +'<div class="trow"><span class="lbl">AFRMM <span class="aliq">Frete×Câmbio×8%+R$20 rateado</span></span><span class="val">'+fR(x.afrmmItem)+'</span></div>'
+        +'<div class="trow"><span class="lbl">AFRMM<span class="aliq">Frete&times;C&acirc;mbio&times;8%+R$20 rateado</span></span><span class="val">'+fR(x.afrmmItem)+'</span></div>'
         +'<div class="trow"><span class="lbl">'+icmsLabel+'<span class="aliq">'+fp(x.icmsA)+'</span></span><span class="val">'+fR(x.icms)+'</span></div>'
-        +'<div class="tsub"><span>Subtotal impostos — '+x.inv+' / NCM '+x.ncm+'</span><span>'+fR(x.totalImp)+'</span></div>'
+        +'<div class="tsub"><span>Subtotal impostos &#8212; '+x.inv+' / NCM '+x.ncm+'</span><span>'+fR(x.totalImp)+'</span></div>'
       +'</div></div>';
   });
   document.getElementById('imp-wrap').innerHTML=impHtml;
 
-  // IMPOSTO TOTAL POR NCM — na ordem de inserção (primeira aparição de cada NCM)
+  // IMPOSTO TOTAL POR NCM (ordem de inserção; só exibe quando há >1 NCM distinto)
   var ncmOrder=[],ncmMap={};
   itemData.forEach(function(x){
-    if(!ncmMap[x.ncm]){
-      ncmOrder.push(x.ncm);
-      ncmMap[x.ncm]={ncm:x.ncm,desc:x.desc,total:0,ii:0,ipi:0,pis:0,cofins:0,icms:0,afrmm:0,sis:0};
-    }
+    if(!ncmMap[x.ncm]){ncmOrder.push(x.ncm);ncmMap[x.ncm]={ncm:x.ncm,desc:x.desc,total:0,ii:0,ipi:0,pis:0,cofins:0,icms:0,afrmm:0,sis:0};}
     ncmMap[x.ncm].total+=x.totalImp;ncmMap[x.ncm].ii+=x.ii;ncmMap[x.ncm].ipi+=x.ipi;
     ncmMap[x.ncm].pis+=x.pis;ncmMap[x.ncm].cofins+=x.cofins;
     ncmMap[x.ncm].icms+=x.icms;ncmMap[x.ncm].afrmm+=x.afrmmItem;ncmMap[x.ncm].sis+=x.sisItem;
   });
+  var secNcm=document.getElementById('sec-ncm-total');
   var ncmHtml='';
-  ncmOrder.forEach(function(ncm){
-    var n2=ncmMap[ncm];
-    ncmHtml+='<div class="ncm-total-block">'
-      +'<div class="ncm-total-title">IMPOSTO TOTAL NCM: '+n2.ncm+' &mdash; '+n2.desc+'</div>'
-      +'<div class="ncm-total-body">'
-        +'<div class="trow"><span class="lbl">Imposto de Importa&ccedil;&atilde;o</span><span class="val">'+fR(n2.ii)+'</span></div>'
-        +'<div class="trow"><span class="lbl">I.P.I.</span><span class="val">'+fR(n2.ipi)+'</span></div>'
-        +'<div class="trow"><span class="lbl">PIS</span><span class="val">'+fR(n2.pis)+'</span></div>'
-        +'<div class="trow"><span class="lbl">COFINS</span><span class="val">'+fR(n2.cofins)+'</span></div>'
-        +'<div class="trow"><span class="lbl">Taxa Siscomex</span><span class="val">'+fR(n2.sis)+'</span></div>'
-        +'<div class="trow"><span class="lbl">AFRMM</span><span class="val">'+fR(n2.afrmm)+'</span></div>'
-        +'<div class="trow"><span class="lbl">ICMS</span><span class="val">'+fR(n2.icms)+'</span></div>'
-        +'<div class="ncm-total-sub"><span>IMPOSTO TOTAL NCM '+n2.ncm+'</span><span>'+fR(n2.total)+'</span></div>'
-      +'</div></div>';
-  });
+  if(ncmOrder.length>1){
+    ncmOrder.forEach(function(ncm){
+      var n2=ncmMap[ncm];
+      ncmHtml+='<div class="ncm-total-block">'
+        +'<div class="ncm-total-title">IMPOSTO TOTAL NCM: '+n2.ncm+' &mdash; '+n2.desc+'</div>'
+        +'<div class="ncm-total-body">'
+          +'<div class="trow"><span class="lbl">Imposto de Importa&ccedil;&atilde;o</span><span class="val">'+fR(n2.ii)+'</span></div>'
+          +'<div class="trow"><span class="lbl">I.P.I.</span><span class="val">'+fR(n2.ipi)+'</span></div>'
+          +'<div class="trow"><span class="lbl">PIS</span><span class="val">'+fR(n2.pis)+'</span></div>'
+          +'<div class="trow"><span class="lbl">COFINS</span><span class="val">'+fR(n2.cofins)+'</span></div>'
+          +'<div class="trow"><span class="lbl">Taxa Siscomex</span><span class="val">'+fR(n2.sis)+'</span></div>'
+          +'<div class="trow"><span class="lbl">AFRMM</span><span class="val">'+fR(n2.afrmm)+'</span></div>'
+          +'<div class="trow"><span class="lbl">ICMS</span><span class="val">'+fR(n2.icms)+'</span></div>'
+          +'<div class="ncm-total-sub"><span>IMPOSTO TOTAL NCM '+n2.ncm+'</span><span>'+fR(n2.total)+'</span></div>'
+        +'</div></div>';
+    });
+    if(secNcm)secNcm.style.display='';
+  }else{
+    if(secNcm)secNcm.style.display='none';
+  }
   document.getElementById('ncm-total-wrap').innerHTML=ncmHtml;
 
   // DESPESAS
   document.getElementById('desp-body').innerHTML=
-    despList.map(function(r){return '<div class="trow"><span class="lbl">'+r.nom+'</span><span class="val">'+fR(r.val)+'</span></div>';}).join('')+
-    '<div class="dsub"><span>2.1 &ndash; SUBTOTAL DESPESAS GERAIS</span><span>'+fR(totalDesp)+'</span></div>';
+    despList.map(function(r){return '<div class="trow"><span class="lbl">'+r.nom+'</span><span class="val">'+fR(r.val)+'</span></div>';}).join('')
+    +'<div class="dsub"><span>2.1 &#8211; SUBTOTAL DESPESAS GERAIS</span><span>'+fR(totalDesp)+'</span></div>';
 
-  // TABELA RATEIO DESPESAS POR ITEM (formato Renayara)
-  // Colunas: Nº | NCM | Descrição | Qtd | % Rateio | VMLE(R$) | Frete Rat(R$) | CIF(R$) |
-  //          II | IPI | PIS | COFINS | Siscomex | AFRMM | [despesas] | Imp.Fed+Est | Desp.Gerais | Custo Total | Custo Unit.
+  // TABELA RATEIO COMPLETO
   var despCols=despList.filter(function(d){return d.val>0;});
   var rdHtml='<thead><tr>'
     +'<th class="L">N&#186;</th><th class="L">NCM</th><th class="L">Descri&ccedil;&atilde;o</th>'
@@ -687,18 +670,14 @@ function calcular(){
     +'<th>II (R$)</th><th>IPI (R$)</th><th>PIS (R$)</th><th>COFINS (R$)</th>'
     +'<th>Siscomex</th><th>AFRMM</th>';
   despCols.forEach(function(d){rdHtml+='<th>'+d.nom+'</th>';});
-  rdHtml+='<th>Imp. Fed+Est (R$)</th><th>Desp. Gerais (R$)</th><th>Custo Total (R$)</th><th>Custo Unit. (R$)</th>'
-    +'</tr></thead><tbody>';
+  rdHtml+='<th>Imp. Fed+Est (R$)</th><th>Desp. Gerais (R$)</th><th>Custo Total (R$)</th><th>Custo Unit. (R$)</th></tr></thead><tbody>';
   var totRD={vmle:0,fp:0,cif:0,ii:0,ipi:0,pis:0,cofins:0,sis:0,afrmm:0,imp:0,desp:0,total:0};
   var despColTotals=despCols.map(function(){return 0;});
   itemData.forEach(function(x,idx){
     var pct=totalFOB_USD>0?(x.fobUSD/totalFOB_USD*100):0;
-    // Despesas rateadas pelo CIF de cada item
     var despItem=0;
     var despItemVals=despCols.map(function(d){
-      var v=totalCIF_BRL>0?(x.cifBRL/totalCIF_BRL)*d.val:0;
-      despItem+=v;
-      return v;
+      var v=totalCIF_BRL>0?(x.cifBRL/totalCIF_BRL)*d.val:0;despItem+=v;return v;
     });
     var custoTotal=x.totalImp+despItem;
     var custoUnit=x.qtdItem>0?custoTotal/x.qtdItem:0;
@@ -708,20 +687,12 @@ function calcular(){
     totRD.desp+=despItem;totRD.total+=custoTotal;
     despItemVals.forEach(function(v,i){despColTotals[i]+=v;});
     rdHtml+='<tr>'
-      +'<td class="L">'+(idx+1)+'</td>'
-      +'<td class="L">'+x.ncm+'</td>'
-      +'<td class="L">'+x.desc+'</td>'
-      +'<td>'+( x.qtdItem>0?x.qtdItem.toLocaleString('pt-BR'):'-' )+'</td>'
+      +'<td class="L">'+(idx+1)+'</td><td class="L">'+x.ncm+'</td><td class="L">'+x.desc+'</td>'
+      +'<td>'+(x.qtdItem>0?x.qtdItem.toLocaleString('pt-BR'):'-')+'</td>'
       +'<td>'+fPct(pct)+'</td>'
-      +'<td>'+fR(x.fobBRL)+'</td>'
-      +'<td>'+fR(x.fpBRL)+'</td>'
-      +'<td>'+fR(x.cifBRL)+'</td>'
-      +'<td>'+fR(x.ii)+'</td>'
-      +'<td>'+fR(x.ipi)+'</td>'
-      +'<td>'+fR(x.pis)+'</td>'
-      +'<td>'+fR(x.cofins)+'</td>'
-      +'<td>'+fR(x.sisItem)+'</td>'
-      +'<td>'+fR(x.afrmmItem)+'</td>';
+      +'<td>'+fR(x.fobBRL)+'</td><td>'+fR(x.fpBRL)+'</td><td>'+fR(x.cifBRL)+'</td>'
+      +'<td>'+fR(x.ii)+'</td><td>'+fR(x.ipi)+'</td><td>'+fR(x.pis)+'</td><td>'+fR(x.cofins)+'</td>'
+      +'<td>'+fR(x.sisItem)+'</td><td>'+fR(x.afrmmItem)+'</td>';
     despItemVals.forEach(function(v){rdHtml+='<td>'+fR(v)+'</td>';});
     rdHtml+='<td style="font-weight:600">'+fR(x.totalImp)+'</td>'
       +'<td>'+fR(despItem)+'</td>'
@@ -735,60 +706,59 @@ function calcular(){
     +'<td>'+fR(totRD.ii)+'</td><td>'+fR(totRD.ipi)+'</td><td>'+fR(totRD.pis)+'</td><td>'+fR(totRD.cofins)+'</td>'
     +'<td>'+fR(totRD.sis)+'</td><td>'+fR(totRD.afrmm)+'</td>';
   despColTotals.forEach(function(v){rdHtml+='<td>'+fR(v)+'</td>';});
-  rdHtml+='<td>'+fR(totRD.imp)+'</td><td>'+fR(totRD.desp)+'</td>'
-    +'<td>'+fR(totRD.total)+'</td><td>-</td>'
-    +'</tr></tbody>';
+  rdHtml+='<td>'+fR(totRD.imp)+'</td><td>'+fR(totRD.desp)+'</td><td>'+fR(totRD.total)+'</td><td>-</td></tr></tbody>';
   document.getElementById('rdtable').innerHTML=rdHtml;
 
   // RESUMO
   document.getElementById('resumo-rows').innerHTML=
-    '<div class="resumo-row"><span>Valor do Produto (VMLE) <span style="font-size:10px;color:#aab3bd">— pago diretamente ao fornecedor</span></span><span style="color:#aab3bd">'+fR(totalFOB_BRL)+'</span></div>'+
-    '<div class="resumo-row"><span>Total Impostos Federais + Estaduais</span><span style="font-weight:700">'+fR(totalImpAll)+'</span></div>'+
-    '<div class="resumo-row"><span>Subtotal Despesas Gerais</span><span style="font-weight:700">'+fR(totalDesp)+'</span></div>';
+    '<div class="resumo-row"><span>Valor do Produto (VMLE) <span style="font-size:10px;color:#aab3bd">&#8212; pago diretamente ao fornecedor</span></span><span style="color:#aab3bd">'+fR(totalFOB_BRL)+'</span></div>'
+    +'<div class="resumo-row"><span>Total Impostos Federais + Estaduais</span><span style="font-weight:700">'+fR(totalImpAll)+'</span></div>'
+    +'<div class="resumo-row"><span>Subtotal Despesas Gerais</span><span style="font-weight:700">'+fR(totalDesp)+'</span></div>';
 
   document.getElementById('grand-total').innerHTML=
     '<div class="gt-lbl">TOTAL DE IMPOSTOS (FEDERAIS + ESTADUAIS) + DESPESAS</div>'
     +'<div class="gt-val">'+fR(grandTotal)+'</div>'
     +'<div class="gt-sub">DATA: '+hoje+' &nbsp;&middot;&nbsp; C&acirc;mbio: R$ '+cambio.toFixed(4)+' &nbsp;&middot;&nbsp; Siscomex ('+adicoes+' adi&ccedil;&otilde;es): '+fR(sisTotal)+' &nbsp;&middot;&nbsp; AFRMM: '+fR(afrmmTotal)+'</div>';
 
-  // CUSTO UNITÁRIO — por NCM + geral
+  // CUSTO UNITÁRIO POR NCM + GERAL
+  // Custo por NCM: só exibe se o NCM tiver qtdItem preenchida
   var ucHtml='';
-  // Se mais de 1 item, mostra custo por NCM
-  if(itemData.length>1){
+  var algumCustoNCM=false;
+  if(ncmOrder.length>1){
     ncmOrder.forEach(function(ncm){
       var itensNCM=itemData.filter(function(x){return x.ncm===ncm;});
       var qtdNCM=0,impNCM=0,despNCM=0;
       itensNCM.forEach(function(x){
-        qtdNCM+=x.qtdItem;
-        impNCM+=x.totalImp;
-        var di=0;despCols.forEach(function(d){di+=totalCIF_BRL>0?(x.cifBRL/totalCIF_BRL)*d.val:0;});
-        // fixed despesas fixas por item
-        var despFixas=totalCIF_BRL>0?(itensNCM.reduce(function(s,xi){return s+xi.cifBRL;},0)/totalCIF_BRL)*totalDesp:0;
-        despNCM=despFixas;
+        qtdNCM+=x.qtdItem;impNCM+=x.totalImp;
+        despCols.forEach(function(d){despNCM+=totalCIF_BRL>0?(x.cifBRL/totalCIF_BRL)*d.val:0;});
       });
       var custoNCM=impNCM+despNCM;
       if(qtdNCM>0){
+        algumCustoNCM=true;
         ucHtml+='<div class="unit-card" style="margin-bottom:8px">'
-          +'<div><div class="uc-lbl">Custo unit&#225;rio — NCM '+ncm+' ('+ncmMap[ncm].desc+')</div>'
+          +'<div><div class="uc-lbl">Custo unit&#225;rio &#8212; NCM '+ncm+' ('+ncmMap[ncm].desc+')</div>'
           +'<div class="uc-qty">Impostos + despesas rateadas &divide; '+qtdNCM.toLocaleString('pt-BR')+' pe&ccedil;as</div></div>'
           +'<div class="uc-val">'+fR(custoNCM/qtdNCM)+'</div>'
           +'</div>';
       }
     });
   }
-  // Custo geral
-  ucHtml+='<div class="unit-card">'
-    +'<div><div class="uc-lbl">Custo unit&#225;rio de importa&ccedil;&atilde;o (total geral)</div>'
-    +'<div class="uc-qty">Total (impostos + despesas) &divide; '+qtdTotal.toLocaleString('pt-BR')+' unidade(s)</div></div>'
-    +'<div class="uc-val">'+fR(unitarioGeral)+'</div>'
-    +'</div>';
+  // Card geral: só exibe quando NÃO há custo por NCM (1 só NCM) OU quando qtdTotal foi preenchido
+  var qtdSomada=itemData.reduce(function(s,x){return s+(x.qtdItem||0);},0);
+  var qtdParaGeral=qtdSomada>0?qtdSomada:(qtdTotal||1);
+  if(!algumCustoNCM){
+    ucHtml+='<div class="unit-card">'
+      +'<div><div class="uc-lbl">Custo unit&#225;rio de importa&ccedil;&atilde;o</div>'
+      +'<div class="uc-qty">Total (impostos + despesas) &divide; '+qtdParaGeral.toLocaleString('pt-BR')+' unidade(s)</div></div>'
+      +'<div class="uc-val">'+fR(grandTotal/qtdParaGeral)+'</div>'
+      +'</div>';
+  }
   document.getElementById('unit-cards-wrap').innerHTML=ucHtml;
 
   var obs=gs('f_obs');var obEl=document.getElementById('obs-box');
   if(obs){obEl.innerHTML='<strong>OBSERVA&Ccedil;&Otilde;ES</strong>'+obs.replace(/\n/g,'<br>');obEl.style.display='block';}
   else{obEl.style.display='none';}
 
-  // Salvar para XLSX
   lastCalc={itemData:itemData,ncmOrder:ncmOrder,ncmMap:ncmMap,despList:despList,despCols:despCols,
     totalDesp:totalDesp,grandTotal:grandTotal,unitarioGeral:unitarioGeral,
     totalImpAll:totalImpAll,totalFOB_BRL:totalFOB_BRL,totalCIF_BRL:totalCIF_BRL,
@@ -810,28 +780,23 @@ function abrirModal(){
 function fecharModal(){document.getElementById('modal').classList.remove('show');}
 
 async function confirmarPDF(){
-  document.getElementById('loading').textContent='⏳ Gerando PDF, aguarde...';
+  document.getElementById('loading').textContent='Gerando PDF, aguarde...';
   document.getElementById('loading').classList.add('show');
-  // Mostrar header/footer, ocultar seções exclusivas do XLSX
   document.getElementById('pdf-header').style.display='block';
   document.getElementById('pdf-footer').style.display='block';
   document.getElementById('sec-rateio-desp').style.display='none';
   document.getElementById('sec-resumo').style.display='none';
-  // Mover obs-box e grand-total para fora do sec-resumo temporariamente não é necessário
-  // pois o sec-resumo já inclui tudo — mas queremos mostrar o grand-total no PDF.
-  // Solução: exibir só o grand-total e unit-cards inline antes de capturar.
+  // Clonar grand-total, unit-cards e obs para mostrar no PDF fora do sec-resumo
+  var pdfArea=document.getElementById('pdf-area');
+  var pdfFooterEl=document.getElementById('pdf-footer');
   var gtClone=document.getElementById('grand-total').cloneNode(true);
   var ucClone=document.getElementById('unit-cards-wrap').cloneNode(true);
   var obClone=document.getElementById('obs-box').cloneNode(true);
-  var pdfArea=document.getElementById('pdf-area');
-  var pdfFooterEl=document.getElementById('pdf-footer');
-  // Inserir clone do grand-total logo antes do footer
   pdfArea.insertBefore(obClone,pdfFooterEl);
   pdfArea.insertBefore(ucClone,pdfFooterEl);
   pdfArea.insertBefore(gtClone,pdfFooterEl);
   try{
-    var el=document.getElementById('pdf-area');
-    var canvas=await html2canvas(el,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#ffffff',logging:false});
+    var canvas=await html2canvas(pdfArea,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#ffffff',logging:false});
     var img=canvas.toDataURL('image/png');
     var pdf=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
     var pw=pdf.internal.pageSize.getWidth();
@@ -847,10 +812,7 @@ async function confirmarPDF(){
     var dt=new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
     pdf.save('Estudo_Viabilidade_'+imp+'_'+dt+'.pdf');
   }catch(e){alert('Erro PDF: '+e.message);}
-  // Restaurar estado
-  pdfArea.removeChild(gtClone);
-  pdfArea.removeChild(ucClone);
-  pdfArea.removeChild(obClone);
+  pdfArea.removeChild(gtClone);pdfArea.removeChild(ucClone);pdfArea.removeChild(obClone);
   document.getElementById('pdf-header').style.display='none';
   document.getElementById('pdf-footer').style.display='none';
   document.getElementById('sec-rateio-desp').style.display='';
@@ -861,50 +823,41 @@ async function confirmarPDF(){
 
 function confirmarXLSX(){
   if(!lastCalc){alert('Calcule o estudo primeiro.');return;}
-  document.getElementById('loading').textContent='⏳ Gerando Excel, aguarde...';
+  document.getElementById('loading').textContent='Gerando Excel, aguarde...';
   document.getElementById('loading').classList.add('show');
   try{
     var c=lastCalc;
     var wb=XLSX.utils.book_new();
-
-    // Aba única: Estudo Detalhado completo
-    // Bloco de cabeçalho de identificação no topo
     var rows=[];
-    rows.push(['ESTUDO DE VIABILIDADE – ÁGIL SOLUÇÕES ADUANEIRAS']);
+    rows.push(['ESTUDO DE VIABILIDADE - AGIL SOLUCOES ADUANEIRAS']);
     rows.push([]);
-    rows.push(['Data:',c.hoje,'','Câmbio (R$/USD):',c.cambio]);
+    rows.push(['Data:',c.hoje,'','Cambio (R$/USD):',c.cambio]);
     rows.push(['Importador:',c.imp,'','Exportador:',c.exp]);
     rows.push(['Produto:',c.prod,'','Invoice(s):',c.inv]);
     rows.push(['Porto Origem:',c.porig,'','Porto Destino:',c.pdest]);
     rows.push(['FOB Total (USD):',c.totalFOB_USD,'','FOB Total (R$):',c.totalFOB_BRL]);
     rows.push(['Frete (USD):',c.freteUSD,'','Frete (R$):',c.freteBRL]);
-    rows.push(['Valor Aduaneiro (R$):',c.totalCIF_BRL,'','Siscomex ('+c.adicoes+' adições):',c.sisTotal]);
+    rows.push(['Valor Aduaneiro (R$):',c.totalCIF_BRL,'','Siscomex ('+c.adicoes+' adicoes):',c.sisTotal]);
     rows.push(['AFRMM (R$):',c.afrmmTotal,'','','']);
     rows.push([]);
-
-    // Tabela principal: Rateio Completo com todas as colunas
-    var hdr=['Nº','NCM','Descrição','Qtd (pcs)','% Rateio (FOB)',
+    var hdr=['No','NCM','Descricao','Qtd (pcs)','% Rateio (FOB)',
       'VMLE (R$)','Frete Rat. (R$)','Valor CIF (R$)',
       'II (R$)','IPI (R$)','PIS (R$)','COFINS (R$)','Siscomex (R$)','AFRMM (R$)'];
-    c.despCols.forEach(function(d){hdr.push(d.nom+' (R$)');});
-    hdr.push('Imp. Federais+Estaduais (R$)','Despesas Gerais (R$)','Custo Total (R$)','Custo Unit. (R$)');
+    c.despCols.forEach(function(d){hdr.push(d.nom.replace(/&[^;]+;/g,'')+' (R$)');});
+    hdr.push('Imp. Fed+Est (R$)','Despesas Gerais (R$)','Custo Total (R$)','Custo Unit. (R$)');
     rows.push(hdr);
-
     var totRow={vmle:0,fp:0,cif:0,ii:0,ipi:0,pis:0,cofins:0,sis:0,afrmm:0,imp:0,desp:0,total:0};
     var despColTotals=c.despCols.map(function(){return 0;});
-
     c.itemData.forEach(function(x,idx){
       var pct=c.totalFOB_USD>0?(x.fobUSD/c.totalFOB_USD*100):0;
       var despItem=0;
       var despItemVals=c.despCols.map(function(d){
-        var v=c.totalCIF_BRL>0?(x.cifBRL/c.totalCIF_BRL)*d.val:0;
-        despItem+=v;return v;
+        var v=c.totalCIF_BRL>0?(x.cifBRL/c.totalCIF_BRL)*d.val:0;despItem+=v;return v;
       });
       var custoTotal=x.totalImp+despItem;
       var custoUnit=x.qtdItem>0?custoTotal/x.qtdItem:null;
       var row=[idx+1,x.ncm,x.desc,x.qtdItem||null,pct/100,
-        x.fobBRL,x.fpBRL,x.cifBRL,
-        x.ii,x.ipi,x.pis,x.cofins,x.sisItem,x.afrmmItem];
+        x.fobBRL,x.fpBRL,x.cifBRL,x.ii,x.ipi,x.pis,x.cofins,x.sisItem,x.afrmmItem];
       despItemVals.forEach(function(v,i){row.push(v);despColTotals[i]+=v;});
       row.push(x.totalImp,despItem,custoTotal,custoUnit);
       totRow.vmle+=x.fobBRL;totRow.fp+=x.fpBRL;totRow.cif+=x.cifBRL;
@@ -913,39 +866,23 @@ function confirmarXLSX(){
       totRow.desp+=despItem;totRow.total+=custoTotal;
       rows.push(row);
     });
-
-    // Linha de totais
-    var totLine=['TOTAIS','','',null,1,
-      totRow.vmle,totRow.fp,totRow.cif,
+    var totLine=['TOTAIS','','',null,1,totRow.vmle,totRow.fp,totRow.cif,
       totRow.ii,totRow.ipi,totRow.pis,totRow.cofins,totRow.sis,totRow.afrmm];
     despColTotals.forEach(function(v){totLine.push(v);});
     totLine.push(totRow.imp,totRow.desp,totRow.total,null);
-    rows.push(totLine);
-    rows.push([]);
-
-    // Bloco resumo no rodapé
+    rows.push(totLine);rows.push([]);
     rows.push(['RESUMO']);
-    rows.push(['Valor Produto – VMLE (pago ao fornecedor)',c.totalFOB_BRL]);
+    rows.push(['Valor Produto - VMLE (pago ao fornecedor)',c.totalFOB_BRL]);
     rows.push(['Total Impostos Federais + Estaduais',c.totalImpAll]);
     rows.push(['Subtotal Despesas Gerais',c.totalDesp]);
     rows.push(['TOTAL GLOBAL (Impostos + Despesas)',c.grandTotal]);
-    rows.push(['Custo Unitário Geral (÷ '+c.qtdTotal+' unidades)',c.unitarioGeral]);
-
+    rows.push(['Custo Unitario Geral (div '+c.qtdTotal+' unidades)',c.unitarioGeral]);
     var ws=XLSX.utils.aoa_to_sheet(rows);
-
-    // Formatar % como percentual
-    var pctCol=4; // coluna E (índice 4), "% Rateio"
-    // Definir larguras de coluna
-    ws['!cols']=[
-      {wch:4},{wch:12},{wch:28},{wch:10},{wch:10},
-      {wch:14},{wch:14},{wch:14},
-      {wch:13},{wch:13},{wch:13},{wch:13},{wch:13},{wch:13}
-    ];
+    ws['!cols']=[{wch:4},{wch:12},{wch:28},{wch:10},{wch:12},
+      {wch:14},{wch:14},{wch:14},{wch:13},{wch:13},{wch:13},{wch:13},{wch:13},{wch:13}];
     c.despCols.forEach(function(){ws['!cols'].push({wch:18});});
     ws['!cols'].push({wch:22},{wch:18},{wch:16},{wch:14});
-
     XLSX.utils.book_append_sheet(wb,ws,'Estudo Detalhado');
-
     var imp2=(c.imp||'Estudo').replace(/[^a-zA-Z0-9]/g,'_').substring(0,30);
     var dt2=new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
     XLSX.writeFile(wb,'Estudo_Detalhado_'+imp2+'_'+dt2+'.xlsx');
